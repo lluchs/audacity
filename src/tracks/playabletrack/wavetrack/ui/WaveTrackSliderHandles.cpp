@@ -48,9 +48,13 @@ UIHandle::Result GainSliderHandle::SetValue
    (void)pProject;//Compiler food
    auto pTrack = GetWaveTrack();
 
-   if (pTrack) {
-      for (auto channel :
-           TrackList::Channels(pTrack.get()))
+   if (!pTrack || pTrack->IsSelected()) {
+      auto &tracks = TrackList::Get(*pProject);
+      for (auto track : tracks.Selected<WaveTrack>())
+         for (auto channel : TrackList::Channels(track))
+            channel->SetGain(newValue);
+   } else {
+      for (auto channel : TrackList::Channels(pTrack.get()))
          channel->SetGain(newValue);
    }
 
@@ -147,9 +151,13 @@ UIHandle::Result PanSliderHandle::SetValue(AudacityProject *pProject, float newV
    Result result = RefreshNone;
    auto pTrack = GetWaveTrack();
 
-   if (pTrack) {
-      for (auto channel :
-           TrackList::Channels(pTrack.get()))
+   if (!pTrack || pTrack->IsSelected()) {
+      auto &tracks = TrackList::Get(*pProject);
+      for (auto track : tracks.Selected<WaveTrack>())
+         for (auto channel : TrackList::Channels(track))
+            channel->SetPan(newValue);
+   } else {
+      for (auto channel : TrackList::Channels(pTrack.get()))
          channel->SetPan(newValue);
    }
 
